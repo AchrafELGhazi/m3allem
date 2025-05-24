@@ -35,7 +35,7 @@ M3allem is a Moroccan application that connects users with trusted home service 
 
 ```
 m3allem/
-├── 📱 app/          # React Native + Expo mobile app
+├── 📱 mobile/          # React Native + Expo mobile app
 │   ├── src/
 │   ├── package.json
 │   └── app.json
@@ -74,7 +74,7 @@ m3allem/
    cd web && npm install
    
    # Install mobile dependencies
-   cd ../app && npm install
+   cd ../mobile && npm install
    
    # Install server dependencies
    cd ../server && npm install
