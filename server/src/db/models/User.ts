@@ -1,18 +1,19 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
   // Basic Information
+  _id: Types.ObjectId;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   phone: string;
   dateOfBirth?: Date;
-  gender?: 'male' | 'female';
+  gender?: "male" | "female";
 
   // Account Information
-  userType: 'customer' | 'professional' | 'admin';
+  userType: "customer" | "professional" | "admin";
   isVerified: boolean;
   isActive: boolean;
   emailVerificationToken?: string;
@@ -35,7 +36,7 @@ export interface IUser extends Document {
   };
 
   // App-specific
-  language?: 'ar' | 'fr' | 'en';
+  language?: "ar" | "fr" | "en";
   notificationPreferences?: {
     email: boolean;
     push: boolean;

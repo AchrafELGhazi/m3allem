@@ -9,7 +9,7 @@ import { Server as SocketIOServer } from "socket.io";
 import config from "./config/config";
 import logger from "./config/logger";
 import { apiRateLimiter } from "./middleware/rate-limiter.middleware";
-// import { apiRouter } from './src/routes';
+import apiRouter from "./routes/api";
 
 const app = express();
 
@@ -78,7 +78,7 @@ app.get("/health", (req, res) => {
 });
 
 // API routes
-// app.use('/api', apiRouter); // Uncomment when ready
+app.use('/api', apiRouter);
 
 // 404 handler
 app.use("*", (req, res) => {
