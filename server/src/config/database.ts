@@ -5,7 +5,7 @@ export const connectDatabase = async (): Promise<void> => {
     const isProduction = process.env.NODE_ENV === 'production';
     const mongoUri = isProduction
       ? process.env.MONGODB_URI_PROD
-      : process.env.MONGODB_URI_DEV || 'mongodb://localhost:27017/m3allem_dev';
+      : process.env.MONGODB_URI_DEV;
 
     if (!mongoUri) {
       throw new Error(
@@ -27,7 +27,6 @@ export const connectDatabase = async (): Promise<void> => {
       `✅ Connected to MongoDB (${isProduction ? 'Atlas' : 'Local'})`
     );
 
-    // Handle connection events
     mongoose.connection.on('error', error => {
       console.error('❌ MongoDB connection error:', error);
     });
