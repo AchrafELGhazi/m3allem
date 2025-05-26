@@ -1,0 +1,156 @@
+src/
+├── config/
+│   ├── database.ts
+│   ├── socket.ts
+│   └── cloudinary.ts
+├── db/
+│   ├── models/
+│   │   ├── User.ts
+│   │   ├── Professional.ts
+│   │   ├── Service.ts
+│   │   ├── Booking.ts
+│   │   ├── Review.ts
+│   │   ├── Chat.ts
+│   │   ├── Notification.ts
+│   │   └── index.ts
+│   ├── seeders/
+│   │   ├── userSeeder.ts
+│   │   ├── serviceSeeder.ts
+│   │   ├── professionalSeeder.ts
+│   │   └── index.ts
+│   └── migrations/
+├── features/
+│   ├── auth/
+│   │   ├── controllers/
+│   │   │   ├── authController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── authService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── authSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── users/
+│   │   ├── controllers/
+│   │   │   ├── userController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── userService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── userSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── professionals/
+│   │   ├── controllers/
+│   │   │   ├── professionalController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── professionalService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── professionalSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── services/
+│   │   ├── controllers/
+│   │   │   ├── serviceController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── serviceService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── serviceSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── bookings/
+│   │   ├── controllers/
+│   │   │   ├── bookingController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── bookingService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── bookingSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── reviews/
+│   │   ├── controllers/
+│   │   │   ├── reviewController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── reviewService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── reviewSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── chat/
+│   │   ├── controllers/
+│   │   │   ├── chatController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── chatService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── chatSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   ├── admin/
+│   │   ├── controllers/
+│   │   │   ├── adminController.ts
+│   │   │   └── index.ts
+│   │   ├── services/
+│   │   │   ├── adminService.ts
+│   │   │   └── index.ts
+│   │   ├── schemas/
+│   │   │   ├── adminSchemas.ts
+│   │   │   └── index.ts
+│   │   ├── routes.ts
+│   │   └── index.ts
+│   └── notifications/
+│       ├── controllers/
+│       │   ├── notificationController.ts
+│       │   └── index.ts
+│       ├── services/
+│       │   ├── notificationService.ts
+│       │   ├── emailService.ts
+│       │   └── index.ts
+│       ├── schemas/
+│       │   ├── notificationSchemas.ts
+│       │   └── index.ts
+│       ├── routes.ts
+│       └── index.ts
+├── shared/
+│   ├── middleware/
+│   │   ├── auth.ts
+│   │   ├── validation.ts
+│   │   ├── errorHandler.ts
+│   │   ├── notFoundHandler.ts
+│   │   ├── upload.ts
+│   │   └── index.ts
+│   ├── utils/
+│   │   ├── jwt.ts
+│   │   ├── email.ts
+│   │   ├── upload.ts
+│   │   ├── location.ts
+│   │   ├── constants.ts
+│   │   └── index.ts
+│   ├── types/
+│   │   ├── common.ts
+│   │   ├── auth.ts
+│   │   └── index.ts
+│   └── exceptions/
+│       ├── AppError.ts
+│       ├── ValidationError.ts
+│       └── index.ts
+├── server.ts
+└── app.ts
