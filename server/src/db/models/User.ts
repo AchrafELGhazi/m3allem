@@ -206,9 +206,6 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Indexes
-userSchema.index({ email: 1 });
-userSchema.index({ phone: 1 });
 userSchema.index({ userType: 1 });
 userSchema.index({ 'address.city': 1, 'address.region': 1 });
 userSchema.index({ 'address.coordinates': '2dsphere' });

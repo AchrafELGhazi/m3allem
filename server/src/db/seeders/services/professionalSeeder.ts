@@ -1,5 +1,7 @@
 import { Professional } from '../../models/Professional';
 import { User } from '../../models/User';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export const seedProfessionals = async () => {
   try {
@@ -16,173 +18,81 @@ export const seedProfessionals = async () => {
       return [];
     }
 
-    const professionals = [
-      // Hassan - Electrician
-      {
-        userId: professionalUsers.find(
-          u => u.email === 'hassan.electricien@m3allem.ma'
-        )?._id,
-        experienceLevel: 'Khrayfi' as const,
-        specializations: ['electrical' as const],
-        yearsOfExperience: 12,
-        hourlyRate: 180,
-        description:
-          'Expert electrician with 12 years of experience in residential and commercial electrical work. Specialized in installations, repairs, and troubleshooting.',
-        isVerified: true,
-        backgroundCheckStatus: 'approved' as const,
-        backgroundCheckDate: new Date('2024-01-15'),
-        hasCriminalRecord: false,
-        licenses: [
-          {
-            type: 'Electrical License',
-            number: 'EL-2024-001',
-            issuedBy: 'Ministry of Equipment and Water',
-            expiryDate: new Date('2026-01-15'),
-          },
-        ],
-        certifications: [
-          {
-            name: 'Electrical Safety Certification',
-            issuedBy: 'ONEE',
-            issuedDate: new Date('2023-06-01'),
-            expiryDate: new Date('2025-06-01'),
-          },
-        ],
-        portfolio: [
-          {
-            title: 'Villa Electrical Installation',
-            description: 'Complete electrical installation for 3-bedroom villa',
-            imageUrls: [
-              'https://example.com/electrical1.jpg',
-              'https://example.com/electrical2.jpg',
-            ],
-            category: 'electrical' as const,
-            completedDate: new Date('2024-02-15'),
-          },
-        ],
-        currentLocation: {
-          latitude: 33.5731,
-          longitude: -7.5898,
-          lastUpdated: new Date(),
-        },
-        workingAreas: [
-          {
-            city: 'Casablanca',
-            region: 'Casablanca-Settat',
-            maxDistanceKm: 25,
-          },
-        ],
-        workingHours: {
-          monday: { start: '08:00', end: '18:00', available: true },
-          tuesday: { start: '08:00', end: '18:00', available: true },
-          wednesday: { start: '08:00', end: '18:00', available: true },
-          thursday: { start: '08:00', end: '18:00', available: true },
-          friday: { start: '08:00', end: '18:00', available: true },
-          saturday: { start: '08:00', end: '16:00', available: true },
-          sunday: { start: '09:00', end: '13:00', available: false },
-        },
-        rating: 4.8,
-        totalReviews: 45,
-        totalJobsCompleted: 48,
-        responseTimeMinutes: 15,
-        cancellationRate: 2.1,
-        onTimePercentage: 96,
-        totalEarnings: 28500,
-        subscriptionType: 'pro' as const,
-        subscriptionExpiryDate: new Date('2024-12-31'),
-        accountStatus: 'active' as const,
-      },
+    // Read professionals data from JSON file
+    const professionalsDataPath = path.join(
+      __dirname,
+      '../data/Professionals.json'
+    );
+    const professionalsData = JSON.parse(
+      fs.readFileSync(professionalsDataPath, 'utf8')
+    );
 
-      // Said - Plumber
-      {
-        userId: professionalUsers.find(
-          u => u.email === 'said.plombier@m3allem.ma'
-        )?._id,
-        experienceLevel: 'M3allem' as const,
-        specializations: ['plumbing' as const],
-        yearsOfExperience: 18,
-        hourlyRate: 200,
-        description:
-          'Master plumber with 18 years of experience. Specializing in bathroom renovations, pipe installations, and emergency repairs.',
-        isVerified: true,
-        backgroundCheckStatus: 'approved' as const,
-        backgroundCheckDate: new Date('2024-01-10'),
-        hasCriminalRecord: false,
-        licenses: [
-          {
-            type: 'Plumbing License',
-            number: 'PL-2024-002',
-            issuedBy: 'Ministry of Equipment and Water',
-            expiryDate: new Date('2026-01-10'),
-          },
-        ],
-        certifications: [
-          {
-            name: 'Advanced Plumbing Systems',
-            issuedBy: 'OFPPT',
-            issuedDate: new Date('2023-03-15'),
-            expiryDate: new Date('2025-03-15'),
-          },
-        ],
-        portfolio: [
-          {
-            title: 'Luxury Bathroom Renovation',
-            description:
-              'Complete bathroom plumbing renovation with modern fixtures',
-            imageUrls: [
-              'https://example.com/plumbing1.jpg',
-              'https://example.com/plumbing2.jpg',
-            ],
-            category: 'plumbing' as const,
-            completedDate: new Date('2024-01-20'),
-          },
-        ],
-        currentLocation: {
-          latitude: 34.0209,
-          longitude: -6.8416,
-          lastUpdated: new Date(),
-        },
-        workingAreas: [
-          {
-            city: 'Rabat',
-            region: 'Rabat-Salé-Kénitra',
-            maxDistanceKm: 30,
-          },
-        ],
-        workingHours: {
-          monday: { start: '07:00', end: '19:00', available: true },
-          tuesday: { start: '07:00', end: '19:00', available: true },
-          wednesday: { start: '07:00', end: '19:00', available: true },
-          thursday: { start: '07:00', end: '19:00', available: true },
-          friday: { start: '07:00', end: '19:00', available: true },
-          saturday: { start: '08:00', end: '17:00', available: true },
-          sunday: { start: '08:00', end: '12:00', available: false },
-        },
-        rating: 4.9,
-        totalReviews: 72,
-        totalJobsCompleted: 78,
-        responseTimeMinutes: 12,
-        cancellationRate: 1.3,
-        onTimePercentage: 98,
-        totalEarnings: 45200,
-        subscriptionType: 'premium' as const,
-        subscriptionExpiryDate: new Date('2024-12-31'),
-        accountStatus: 'active' as const,
-      },
-    ];
+    // Convert the data and link with user IDs
+    const professionals = professionalsData
+      .map((prof: any) => {
+        const user = professionalUsers.find(u => u.email === prof.userEmail);
 
-    // Filter out any professionals without valid user IDs
-    const validProfessionals = professionals.filter(prof => prof.userId);
+        if (!user) {
+          console.log(`⚠️  User not found for email: ${prof.userEmail}`);
+          return null;
+        }
 
-    if (validProfessionals.length === 0) {
-      console.log('⚠️  No valid professional user IDs found.');
+        // Convert date strings back to Date objects
+        const processedProf = {
+          ...prof,
+          userId: user._id,
+          backgroundCheckDate: prof.backgroundCheckDate
+            ? new Date(prof.backgroundCheckDate)
+            : undefined,
+          subscriptionExpiryDate: prof.subscriptionExpiryDate
+            ? new Date(prof.subscriptionExpiryDate)
+            : undefined,
+          currentLocation: {
+            ...prof.currentLocation,
+            lastUpdated: prof.currentLocation.lastUpdated
+              ? new Date(prof.currentLocation.lastUpdated)
+              : new Date(),
+          },
+          licenses:
+            prof.licenses?.map((license: any) => ({
+              ...license,
+              expiryDate: license.expiryDate
+                ? new Date(license.expiryDate)
+                : undefined,
+            })) || [],
+          certifications:
+            prof.certifications?.map((cert: any) => ({
+              ...cert,
+              issuedDate: cert.issuedDate
+                ? new Date(cert.issuedDate)
+                : undefined,
+              expiryDate: cert.expiryDate
+                ? new Date(cert.expiryDate)
+                : undefined,
+            })) || [],
+          portfolio:
+            prof.portfolio?.map((item: any) => ({
+              ...item,
+              completedDate: item.completedDate
+                ? new Date(item.completedDate)
+                : undefined,
+            })) || [],
+        };
+
+        // Remove the userEmail field as it's no longer needed
+        delete processedProf.userEmail;
+
+        return processedProf;
+      })
+      .filter(Boolean); // Remove null entries
+
+    if (professionals.length === 0) {
+      console.log('⚠️  No valid professional data found.');
       return [];
     }
 
     // Insert professionals
-    const createdProfessionals = await Professional.insertMany(
-      validProfessionals
-    );
+    const createdProfessionals = await Professional.insertMany(professionals);
 
     console.log(
       `✅ Successfully seeded ${createdProfessionals.length} professionals`
