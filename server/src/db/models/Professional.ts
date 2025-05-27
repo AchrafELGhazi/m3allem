@@ -389,7 +389,7 @@ const professionalSchema = new Schema<IProfessional>(
 );
 
 // Indexes
-professionalSchema.index({ userId: 1 });
+// professionalSchema.index({ userId: 1 });
 professionalSchema.index({ experienceLevel: 1 });
 professionalSchema.index({ specializations: 1 });
 professionalSchema.index({ isAvailable: 1 });
