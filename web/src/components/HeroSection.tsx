@@ -12,6 +12,11 @@ import {
 const HeroSection = () => {
   const [email, setEmail] = useState('');
 
+
+
+  // Could you please give me a very detailed documentation about regex okay talking from the introduction to how regular expressions work and the modifiers , the ranges the character classes and the quantifiers and the replaced with pattern the test method and like an example abt validation okay so I want you please to go kind of dive but not too long documentation just make it very straight forward like each quantifier what it does and then example Each class each character class where it does and with an example so go very straightforward very short not so long and very rich
+
+
   const handleSubmit = (e:any) => {
     e.preventDefault();
     console.log('Newsletter signup:', email);
