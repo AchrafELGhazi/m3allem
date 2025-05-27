@@ -12,7 +12,6 @@ import {
 
 export class AuthService {
   static async register(data: RegisterInput) {
-    // Check if user already exists
     const existingUser = await User.findOne({
       $or: [{ email: data.email }, { phone: data.phone }],
     });
@@ -26,7 +25,6 @@ export class AuthService {
       }
     }
 
-    // Create new user
     const user = new User({
       firstName: data.firstName,
       lastName: data.lastName,
@@ -34,36 +32,21 @@ export class AuthService {
       password: data.password,
       phone: data.phone,
       userType: data.userType,
-      address: {
-        city: 'Casablanca', // Default city
-        region: 'Casablanca-Settat', // Default region
-        country: 'Morocco',
-      },
     });
 
     await user.save();
 
-    // If user is a professional, create professional profile
     if (data.userType === 'professional') {
       const professional = new Professional({
         userId: user._id,
         experienceLevel: 'Snaaï',
-        specializations: ['electrical'], // Default specialization
-        yearsOfExperience: 0,
-        hourlyRate: 100, // Default hourly rate
-        workingAreas: [
-          {
-            city: 'Casablanca',
-            region: 'Casablanca-Settat',
-            maxDistanceKm: 10,
-          },
-        ],
+        hourlyRate: 100,
+        
       });
 
       await professional.save();
     }
 
-    // Generate tokens
     const tokenPayload = {
       userId: user._id.toString(),
       email: user.email,
@@ -79,19 +62,16 @@ export class AuthService {
   }
 
   static async login(data: LoginInput) {
-    // Find user by email and include password for comparison
     const user = await User.findOne({ email: data.email }).select('+password');
 
     if (!user) {
       throw new Error('Invalid email or password');
     }
 
-    // Check if user is active
     if (!user.isActive) {
       throw new Error('Account is deactivated. Please contact support.');
     }
 
-    // Compare password
     const isPasswordValid = await user.comparePassword(data.password);
     if (!isPasswordValid) {
       throw new Error('Invalid email or password');

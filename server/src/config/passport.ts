@@ -22,30 +22,25 @@ passport.use(
     },
     async (accessToken, refreshToken, profile: GoogleProfile, done) => {
       try {
-        // Check if user already exists with this Google ID
         let user = await User.findOne({ googleId: profile.id });
 
         if (user) {
-          // User exists, update last login and return user
           user.lastLoginAt = new Date();
           await user.save();
           return done(null, user);
         }
 
-        // Check if user exists with same email (from regular registration)
         const email = profile.emails?.[0]?.value;
         if (email) {
           user = await User.findOne({ email });
 
           if (user) {
-            // Link Google account to existing user
             user.googleId = profile.id;
             user.isGoogleUser = true;
             user.authProvider = "google";
-            user.isVerified = true; // Google users are pre-verified
+            user.isVerified = true;
             user.lastLoginAt = new Date();
 
-            // Update profile picture if not set
             if (!user.profilePicture && profile.photos?.[0]?.value) {
               user.profilePicture = profile.photos[0].value;
             }
@@ -55,8 +50,6 @@ passport.use(
           }
         }
 
-        // Create new user - but we need to redirect to complete profile
-        // For now, we'll store the Google profile data temporarily
         const newUser = new User({
           googleId: profile.id,
           firstName: profile.name?.givenName || "",
@@ -66,10 +59,9 @@ passport.use(
           authProvider: "google",
           isVerified: true,
           isActive: true,
-          phone: "", // Will be completed later
-          userType: "customer", // Default, can be changed during profile completion
+          phone: "",
+          userType: "customer",
           profilePicture: profile.photos?.[0]?.value || null,
-          // No address required at signup
         });
 
         await newUser.save();

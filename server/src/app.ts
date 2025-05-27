@@ -10,6 +10,7 @@ import config from "./config/config";
 import logger from "./config/logger";
 import { apiRateLimiter } from "./middleware/rate-limiter.middleware";
 import apiRouter from "./routes/api";
+import { notFoundHandler } from "./middleware/not-found-handler.middleware";
 
 const app = express();
 
@@ -78,17 +79,10 @@ app.get("/health", (req, res) => {
 });
 
 // API routes
-app.use('/api', apiRouter);
+app.use("/api", apiRouter);
 
 // 404 handler
-app.use("*", (req, res) => {
-  logger.warn({ url: req.originalUrl, method: req.method }, "Route not found");
-  res.status(404).json({
-    status: "error",
-    message: "Route not found",
-    path: req.originalUrl,
-  });
-});
+app.use("/{*splat}", notFoundHandler);
 
 // Global error handler
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

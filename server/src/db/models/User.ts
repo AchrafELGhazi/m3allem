@@ -1,14 +1,14 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import mongoose, { Document, Schema, Types } from "mongoose";
+import bcrypt from "bcryptjs";
 
 export interface IUser extends Document {
+  _id:Types.ObjectId
   // Basic Information
-  _id: Types.ObjectId;
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
-  phone: string;
+  password?: string;
+  phone?: string;
   dateOfBirth?: Date;
   gender?: "male" | "female";
 
@@ -21,14 +21,22 @@ export interface IUser extends Document {
   passwordResetToken?: string;
   passwordResetExpires?: Date;
 
-  // Profile
+  // OAuth related
+  googleId?: string;
+  isGoogleUser: boolean;
+  authProvider: "local" | "google";
+
+  // Profile completion status
+  isProfileComplete: boolean;
+
+  // Profile (optional at signup)
   profilePicture?: string;
   address?: {
     street?: string;
-    city: string;
-    region: string;
+    city?: string;
+    region?: string;
     postalCode?: string;
-    country: string;
+    country?: string;
     coordinates?: {
       latitude: number;
       longitude: number;
@@ -52,47 +60,44 @@ export interface IUser extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
   generatePasswordResetToken(): string;
   getFullName(): string;
+  checkProfileCompletion(): boolean;
 }
 
 const userSchema = new Schema<IUser>(
   {
     firstName: {
       type: String,
-      required: [true, 'First name is required'],
+      required: [true, "First name is required"],
       trim: true,
-      maxlength: [50, 'First name cannot exceed 50 characters'],
+      maxlength: [50, "First name cannot exceed 50 characters"],
     },
     lastName: {
       type: String,
-      required: [true, 'Last name is required'],
+      required: [true, "Last name is required"],
       trim: true,
-      maxlength: [50, 'Last name cannot exceed 50 characters'],
+      maxlength: [50, "Last name cannot exceed 50 characters"],
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        'Please enter a valid email',
-      ],
+      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, "Please enter a valid email"],
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: [8, 'Password must be at least 8 characters'],
+      required: function (this: IUser) {
+        return this.authProvider === "local";
+      },
+      minlength: [8, "Password must be at least 8 characters"],
       select: false,
     },
     phone: {
       type: String,
-      required: [true, 'Phone number is required'],
-      unique: true,
-      match: [
-        /^(\+212|0)[5-7]\d{8}$/,
-        'Please enter a valid Moroccan phone number',
-      ],
+      required: false,
+      sparse: true,
+      match: [/^(\+212|0)[5-7]\d{8}$/, "Please enter a valid Moroccan phone number"],
     },
     dateOfBirth: {
       type: Date,
@@ -100,18 +105,18 @@ const userSchema = new Schema<IUser>(
         validator: function (value: Date) {
           return !value || value < new Date();
         },
-        message: 'Date of birth cannot be in the future',
+        message: "Date of birth cannot be in the future",
       },
     },
     gender: {
       type: String,
-      enum: ['male', 'female'],
+      enum: ["male", "female"],
     },
     userType: {
       type: String,
       required: true,
-      enum: ['customer', 'professional', 'admin'],
-      default: 'customer',
+      enum: ["customer", "professional", "admin"],
+      default: "customer",
     },
     isVerified: {
       type: Boolean,
@@ -125,56 +130,75 @@ const userSchema = new Schema<IUser>(
     emailVerificationExpires: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+
+    // OAuth fields
+    googleId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
+    isGoogleUser: {
+      type: Boolean,
+      default: false,
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+
+    // Profile completion
+    isProfileComplete: {
+      type: Boolean,
+      default: false,
+    },
+
     profilePicture: {
       type: String,
       default: null,
     },
     address: {
       street: String,
-      city: {
-        type: String,
-        required: [true, 'City is required'],
-      },
+      city: String,
       region: {
         type: String,
-        required: [true, 'Region is required'],
         enum: [
-          'Casablanca-Settat',
-          'Rabat-Salé-Kénitra',
-          'Marrakech-Safi',
-          'Fès-Meknès',
-          'Tanger-Tétouan-Al Hoceïma',
-          'Oriental',
-          'Souss-Massa',
-          'Drâa-Tafilalet',
-          'Béni Mellal-Khénifra',
-          'Laâyoune-Sakia El Hamra',
-          'Dakhla-Oued Ed-Dahab',
-          'Guelmim-Oued Noun',
+          "Casablanca-Settat",
+          "Rabat-Salé-Kénitra",
+          "Marrakech-Safi",
+          "Fès-Meknès",
+          "Tanger-Tétouan-Al Hoceïma",
+          "Oriental",
+          "Souss-Massa",
+          "Drâa-Tafilalet",
+          "Béni Mellal-Khénifra",
+          "Laâyoune-Sakia El Hamra",
+          "Dakhla-Oued Ed-Dahab",
+          "Guelmim-Oued Noun",
         ],
       },
       postalCode: String,
       country: {
         type: String,
-        default: 'Morocco',
+        default: "Morocco",
       },
       coordinates: {
         latitude: {
           type: Number,
-          min: [-90, 'Latitude must be between -90 and 90'],
-          max: [90, 'Latitude must be between -90 and 90'],
+          min: [-90, "Latitude must be between -90 and 90"],
+          max: [90, "Latitude must be between -90 and 90"],
         },
         longitude: {
           type: Number,
-          min: [-180, 'Longitude must be between -180 and 180'],
-          max: [180, 'Longitude must be between -180 and 180'],
+          min: [-180, "Longitude must be between -180 and 180"],
+          max: [180, "Longitude must be between -180 and 180"],
         },
       },
     },
     language: {
       type: String,
-      enum: ['ar', 'fr', 'en'],
-      default: 'ar',
+      enum: ["ar", "fr", "en"],
+      default: "ar",
     },
     notificationPreferences: {
       email: {
@@ -207,16 +231,18 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-userSchema.index({ userType: 1 });
-userSchema.index({ 'address.city': 1, 'address.region': 1 });
-userSchema.index({ 'address.coordinates': '2dsphere' });
+// Indexes
+// userSchema.index({ userType: 1 });
+// userSchema.index({ googleId: 1 });
+userSchema.index({ authProvider: 1 });
+userSchema.index({ email: 1, authProvider: 1 });
+userSchema.index({ isProfileComplete: 1 });
 
-// Pre-save middleware to hash password
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre("save", async function (next) {
+  if (!this.password || !this.isModified("password")) return next();
 
   try {
-    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12');
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "12");
     this.password = await bcrypt.hash(this.password, saltRounds);
     next();
   } catch (error) {
@@ -224,14 +250,20 @@ userSchema.pre('save', async function (next) {
   }
 });
 
+userSchema.pre("save", function (next) {
+  this.isProfileComplete = this.checkProfileCompletion();
+  next();
+});
+
 // Instance method to compare password
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
+userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   try {
+    if (!this.password) {
+      return false;
+    }
     return await bcrypt.compare(candidatePassword, this.password);
   } catch (error) {
-    throw new Error('Password comparison failed');
+    throw new Error("Password comparison failed");
   }
 };
 
@@ -240,15 +272,29 @@ userSchema.methods.getFullName = function (): string {
   return `${this.firstName} ${this.lastName}`;
 };
 
+// Instance method to check profile completion
+userSchema.methods.checkProfileCompletion = function (): boolean {
+  const requiredFields = [this.firstName, this.lastName, this.email, this.phone];
+
+  const hasRequiredFields = requiredFields.every(
+    (field) => field && field.toString().trim() !== ""
+  );
+
+  // For professionals, also check if they have professional profile
+  if (this.userType === "professional") {
+    // This would be checked in the service layer
+    return hasRequiredFields;
+  }
+
+  return hasRequiredFields;
+};
+
 // Instance method to generate password reset token
 userSchema.methods.generatePasswordResetToken = function (): string {
-  const resetToken = require('crypto').randomBytes(32).toString('hex');
-  this.passwordResetToken = require('crypto')
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
+  const resetToken = require("crypto").randomBytes(32).toString("hex");
+  this.passwordResetToken = require("crypto").createHash("sha256").update(resetToken).digest("hex");
   this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
   return resetToken;
 };
 
-export const User = mongoose.model<IUser>('User', userSchema);
+export const User = mongoose.model<IUser>("User", userSchema);
