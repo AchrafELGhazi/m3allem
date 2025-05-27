@@ -12,7 +12,7 @@ import {
 const HeroSection = () => {
   const [email, setEmail] = useState('');
 
-  const handleSubmit = e => {
+  const handleSubmit = (e:any) => {
     e.preventDefault();
     console.log('Newsletter signup:', email);
     setEmail('');
